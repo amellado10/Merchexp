@@ -607,6 +607,567 @@
     requestAnimationFrame(frame);
   })();
 
+  /* ---------- Service art: one live canvas per service ---------- */
+  (function () {
+    var BONE = '241,239,234';
+    function ease(x) { x = Math.max(0, Math.min(1, x)); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+    function seg(p, a, b) { return Math.max(0, Math.min(1, (p - a) / (b - a))); }
+    function teePath(ctx, x, y, s) {
+      ctx.save(); ctx.translate(x, y); ctx.scale(s / 80, s / 80);
+      ctx.beginPath();
+      ctx.moveTo(-22, -38); ctx.lineTo(-8, -43); ctx.quadraticCurveTo(0, -34, 8, -43); ctx.lineTo(22, -38);
+      ctx.lineTo(40, -22); ctx.lineTo(30, -9); ctx.lineTo(22, -15); ctx.lineTo(22, 40); ctx.lineTo(-22, 40);
+      ctx.lineTo(-22, -15); ctx.lineTo(-30, -9); ctx.lineTo(-40, -22); ctx.closePath();
+      ctx.restore();
+    }
+    function label(ctx, text, x, y, a, align) {
+      ctx.font = '700 9px "Helvetica Neue", Helvetica, Arial, sans-serif';
+      ctx.textAlign = align || 'left';
+      ctx.fillStyle = 'rgba(' + BONE + ',' + (a == null ? .5 : a) + ')';
+      ctx.fillText(text.split('').join(String.fromCharCode(8202)), x, y);
+      ctx.textAlign = 'left';
+    }
+    // The mark that gets designed and printed: a sun over three stripes inside a ring.
+    function mark(ctx, cx, cy, r, color, progress) {
+      var p = progress == null ? 1 : progress;
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = Math.max(1.2, r * 0.07);
+      ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * seg(p, 0, .45)); ctx.stroke();
+      var sun = seg(p, .45, .7);
+      if (sun) { ctx.beginPath(); ctx.arc(cx, cy + r * .1, r * .45, Math.PI, Math.PI + Math.PI * sun); ctx.lineTo(cx, cy + r * .1); ctx.closePath(); ctx.fill(); }
+      for (var i = 0; i < 3; i++) {
+        var w = seg(p, .7 + i * .1, .8 + i * .1);
+        if (w) ctx.fillRect(cx - r * .45, cy + r * (.22 + i * .17), r * .9 * w, r * .09);
+      }
+    }
+
+    var SCENES = {
+      // Design on the left, screen printing on the right, looping every 6.5 seconds.
+      design: function (ctx, W, H, t, state) {
+        var L = 6.5, p = t % L, cycle = Math.floor(t / L);
+        ctx.fillStyle = '#1A1A1A'; ctx.fillRect(0, 0, W, H);
+        // blueprint grid
+        ctx.strokeStyle = 'rgba(' + BONE + ',.045)'; ctx.lineWidth = 1; ctx.beginPath();
+        for (var gx = 0; gx < W; gx += 16) { ctx.moveTo(gx + .5, 0); ctx.lineTo(gx + .5, H); }
+        for (var gy = 0; gy < H; gy += 16) { ctx.moveTo(0, gy + .5); ctx.lineTo(W, gy + .5); }
+        ctx.stroke();
+
+        var narrow = W < 460, split = W * (narrow ? .4 : .46), r = Math.min(H * .26, split * .3);
+        // --- 01 Design: an artboard where the mark is drawn with a pen tool
+        var ab = { x: W * .05, y: H * .17, w: split - W * .08, h: H * .68 };
+        label(ctx, '01  DESIGN', ab.x, H * .1);
+        ctx.strokeStyle = 'rgba(' + BONE + ',.18)'; ctx.setLineDash([3, 3]); ctx.strokeRect(ab.x + .5, ab.y + .5, ab.w, ab.h); ctx.setLineDash([]);
+        var cx = ab.x + ab.w / 2, cy = ab.y + ab.h / 2, draw = ease(seg(p, .2, 2));
+        mark(ctx, cx, cy, r, 'rgba(' + BONE + ',.95)', draw);
+        // anchor points and the pen cursor while drawing
+        if (draw < 1) {
+          var ang = -Math.PI / 2 + Math.PI * 2 * Math.min(1, draw / .45);
+          var px = draw < .45 ? cx + Math.cos(ang) * r : cx + r * (.45 - .9 * seg(draw, .45, 1)), py = draw < .45 ? cy + Math.sin(ang) * r : cy + r * (.1 + .5 * seg(draw, .45, 1));
+          ctx.fillStyle = '#1A1A1A'; ctx.strokeStyle = 'rgba(' + BONE + ',.9)'; ctx.lineWidth = 1;
+          [[cx, cy - r], [cx + r, cy], [cx, cy + r], [cx - r, cy]].forEach(function (a) { ctx.fillRect(a[0] - 2.5, a[1] - 2.5, 5, 5); ctx.strokeRect(a[0] - 2.5, a[1] - 2.5, 5, 5); });
+          ctx.beginPath(); ctx.moveTo(px - r * .3, py); ctx.lineTo(px + r * .3, py); ctx.stroke();
+          ctx.beginPath(); ctx.arc(px - r * .3, py, 2, 0, 6.283); ctx.arc(px + r * .3, py, 2, 0, 6.283); ctx.fill();
+          // pen nib cursor
+          ctx.save(); ctx.translate(px + 6, py + 6); ctx.rotate(-.6);
+          ctx.fillStyle = 'rgba(' + BONE + ',.95)'; ctx.beginPath(); ctx.moveTo(0, -9); ctx.lineTo(4, 3); ctx.lineTo(0, 7); ctx.lineTo(-4, 3); ctx.closePath(); ctx.fill();
+          ctx.restore();
+        }
+        label(ctx, 'ARTWORK_V' + (3 + cycle % 7) + '.AI', ab.x, ab.y + ab.h + 14, .35);
+
+        // --- 02 Production: screen-printing press
+        var m = W * .05, px0 = split + W * .04, pw = W - px0 - m;
+        label(ctx, '02  PRODUCTION', px0, H * .1);
+        var teeS = Math.min(H * .5, pw * (narrow ? .5 : .4)), tx = px0 + pw * (narrow ? .34 : .36), ty = H * .58;
+        var stackW = teeS * .5, stackX = W - m - stackW / 2, stackY = ty + teeS * .48;
+        // platen
+        ctx.fillStyle = '#242424'; ctx.fillRect(tx - teeS * .55, ty + teeS * .52, teeS * 1.1, 6);
+        function shirt(x, y, s, prog, alpha) {
+          ctx.save(); ctx.globalAlpha = alpha;
+          teePath(ctx, x, y, s); ctx.fillStyle = '#E6E3DC'; ctx.fill();
+          if (prog > 0) {
+            teePath(ctx, x, y, s); ctx.clip();
+            ctx.beginPath(); ctx.rect(x - s, 0, s * 2 * prog, H); ctx.clip();
+            mark(ctx, x, y - s * .12, s * .2, '#121212', 1);
+          }
+          ctx.restore();
+        }
+        var sq = ease(seg(p, 2.6, 3.4)), out = ease(seg(p, 4.9, 5.6)), inn = ease(seg(p, 5.8, 6.4));
+        if (p < 4.9) shirt(tx, ty, teeS, p < 2.6 ? 0 : sq, 1);
+        else if (p < 5.6) {
+          // the printed tee shrinks and folds onto the stack
+          shirt(tx + (stackX - tx) * out, ty + (stackY - 12 - ty) * out, teeS * (1 - out * .55), 1, 1 - out * .8);
+        } else if (p >= 5.8) shirt(tx, ty - (1 - inn) * H * .08, teeS, 0, inn);
+        // the screen frame comes down over the tee, then lifts
+        // Like a real press, the screen is hinged at the back: it tilts up out of the way, then down onto the tee.
+        var fw = teeS * .9, fhFull = teeS * .62, fyDown = ty - teeS * .5;
+        var down = ease(seg(p, 2, 2.5)) - ease(seg(p, 3.6, 4.1));
+        var fh = fhFull * (.18 + .82 * down), fy = fyDown - (1 - down) * teeS * .32;
+        ctx.strokeStyle = 'rgba(' + BONE + ',.75)'; ctx.lineWidth = 3; ctx.strokeRect(tx - fw / 2, fy, fw, fh);
+        ctx.fillStyle = 'rgba(' + BONE + ',.06)'; ctx.fillRect(tx - fw / 2, fy, fw, fh);
+        // hinge arm
+        ctx.fillStyle = '#2E2E2D'; ctx.fillRect(tx - fw * .08, fy - 10, fw * .16, 10);
+        // the burned stencil, visible once the screen is down
+        ctx.save(); ctx.globalAlpha = .35 * down; ctx.translate(tx, fy + fh * .55); ctx.scale(1, Math.max(.05, fh / fhFull)); mark(ctx, 0, 0, teeS * .2, 'rgba(' + BONE + ',1)', 1); ctx.restore();
+        // artwork flies from the artboard to the screen
+        var fly = seg(p, 1.95, 2.35);
+        if (fly > 0 && fly < 1) {
+          var e = ease(fly), mx = cx + (tx - cx) * e, my = cy + (fyDown + fhFull * .55 - cy) * e - Math.sin(Math.PI * e) * H * .25;
+          ctx.save(); ctx.globalAlpha = 1 - e * .4; mark(ctx, mx, my, r * (1 - e * .4), 'rgba(' + BONE + ',.9)', 1); ctx.restore();
+        }
+        // squeegee sweeping across, with its handle
+        if (p > 2.5 && p < 3.6) {
+          var sx = tx - fw / 2 + fw * sq;
+          ctx.fillStyle = 'rgba(' + BONE + ',.95)'; ctx.fillRect(sx - 3, fy - 10, 6, fh + 14);
+          ctx.fillStyle = '#0B0B0B'; ctx.fillRect(sx - 9, fy - 16, 18, 8);
+        }
+        // the folded stack and its counter
+        var landed = p > 5.5, count = 1240 + cycle + (landed ? 1 : 0), layers = 6 + (landed ? 1 : 0);
+        for (var k = 0; k < layers; k++) { ctx.fillStyle = k % 2 ? '#C4C0B8' : '#E6E3DC'; ctx.fillRect(stackX - stackW / 2, stackY - k * 6, stackW, 4.5); }
+        label(ctx, 'UNITS', W - m, stackY - layers * 6 - 20, .45, 'right');
+        label(ctx, String(count).replace(/\B(?=(\d{3})+(?!\d))/g, ','), W - m, stackY - layers * 6 - 8, .8, 'right');
+        if (p > 3.3 && p < 4.9) label(ctx, 'PRINTED', tx, ty + teeS * .52 + 22, .6, 'center');
+      },
+      // A tour route on top; at each stop the merch table opens, the line moves and sizes sell through.
+      tour: function (ctx, W, H, t) {
+        var CITIES = ['SAN JUAN', 'MIAMI', 'MEXICO CITY', 'BOGOTÁ', 'MADRID', 'LONDON', 'TOKYO'];
+        var L = 8, cycle = Math.floor(t / L), p = t % L, ci = cycle % CITIES.length;
+        var narrow = W < 460, m = W * .05;
+        ctx.fillStyle = '#1A1A1A'; ctx.fillRect(0, 0, W, H);
+
+        // --- route strip
+        var ry = H * .15, rx0 = m, rx1 = W - m, n = CITIES.length;
+        var stopX = function (i) { return rx0 + (rx1 - rx0) * (i / (n - 1)); };
+        ctx.strokeStyle = 'rgba(' + BONE + ',.18)'; ctx.setLineDash([3, 4]); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(rx0, ry); ctx.lineTo(rx1, ry); ctx.stroke(); ctx.setLineDash([]);
+        var travel = ease(seg(p, 0, 1.2)), from = (ci + n - 1) % n;
+        var vanX = ci === 0 ? stopX(0) - (1 - travel) * 30 : stopX(from) + (stopX(ci) - stopX(from)) * travel;
+        for (var i = 0; i < n; i++) {
+          var done = i < ci || (i === ci && travel === 1);
+          ctx.beginPath(); ctx.arc(stopX(i), ry, i === ci ? 4 : 3, 0, 6.283);
+          ctx.fillStyle = done ? 'rgba(' + BONE + ',.95)' : '#1A1A1A'; ctx.fill();
+          ctx.strokeStyle = 'rgba(' + BONE + ',' + (done ? .95 : .35) + ')'; ctx.stroke();
+          if (!narrow || i === ci) label(ctx, CITIES[i], stopX(i), ry - 10, i === ci ? .85 : .3, i === 0 ? 'left' : i === n - 1 ? 'right' : 'center');
+        }
+        // the van
+        ctx.fillStyle = 'rgba(' + BONE + ',.95)';
+        ctx.fillRect(vanX - 9, ry + 6, 18, 8); ctx.fillRect(vanX + 5, ry + 8, 6, 6);
+        ctx.fillStyle = '#1A1A1A'; ctx.beginPath(); ctx.arc(vanX - 5, ry + 15, 2, 0, 6.283); ctx.arc(vanX + 7, ry + 15, 2, 0, 6.283); ctx.fill();
+
+        // --- sales simulation for this stop
+        var SIZES = ['S', 'M', 'L', 'XL', '2XL'], START = [4, 5, 5, 3, 2];
+        var open = p > 1.2, STEP = .36, k = open ? Math.floor((p - 1.2) / STEP) : 0, q = open ? ((p - 1.2) % STEP) / STEP : 0;
+        if (p > 7.4) { k = Math.floor((7.4 - 1.2) / STEP); q = 1; }
+        // Which size each sale takes: mediums go first, as they do.
+        var stock = START.slice();
+        function sizeFor(j) { var h = Math.abs(Math.sin((j + 1) * 12.9898 + cycle * 78.233) * 43758.5453) % 1; var w = [.18, .32, .26, .15, .09], acc = 0; for (var s = 0; s < 5; s++) { acc += w[s]; if (h < acc) return s; } return 4; }
+        var sold = 0;
+        for (var j = 0; j < k; j++) { var s0 = sizeFor(j); while (stock[s0] === 0) s0 = (s0 + 1) % 5; stock[s0]--; sold++; }
+
+        // --- merch table with the line
+        var split = narrow ? W * .62 : W * .64, groundY = H * .9;
+        var tableX = m, tableW = (split - m) * .26, tableY = groundY - H * .24;
+        // banner
+        ctx.fillStyle = open ? 'rgba(' + BONE + ',.92)' : '#0B0B0B'; ctx.fillRect(tableX, tableY - H * .34, tableW * 1.1, H * .1);
+        label(ctx, open ? 'MERCH' : 'DOORS SOON', tableX + tableW * .55, tableY - H * .275, open ? 1 : .4, 'center');
+        if (open) { ctx.fillStyle = '#121212'; ctx.font = '700 9px "Helvetica Neue", Helvetica, Arial, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('M E R C H', tableX + tableW * .55, tableY - H * .275); ctx.textAlign = 'left'; }
+        // staff behind the table
+        ctx.fillStyle = '#0F0F0F'; ctx.beginPath(); ctx.arc(tableX + tableW * .5, tableY - H * .12, H * .055, 0, 6.283); ctx.fill();
+        ctx.fillRect(tableX + tableW * .5 - H * .075, tableY - H * .07, H * .15, H * .08);
+        // table
+        ctx.fillStyle = '#2B2B2A'; ctx.fillRect(tableX - tableW * .1, tableY, tableW * 1.2, H * .03);
+        ctx.fillStyle = '#121212'; ctx.fillRect(tableX - tableW * .05, tableY + H * .03, tableW * 1.1, groundY - tableY - H * .03);
+        for (var st = 0; st < 3; st++) { ctx.fillStyle = st % 2 ? '#C4C0B8' : '#E6E3DC'; ctx.fillRect(tableX + tableW * (.05 + st * .32), tableY - 5, tableW * .26, 4); }
+        // the line: fans step forward after each sale
+        var gap = Math.max(18, (split - tableX - tableW * 1.3) / 6), fanS = Math.min(H * .095, gap * .5), front = tableX + tableW * 1.3;
+        var step = open && p <= 7.4 ? ease(Math.min(1, q * 2)) : 0;
+        for (var f = -1; f < 8; f++) {
+          var x = front + gap * (f + 1 - step), alpha = 1;
+          if (f === -1) { if (!open || q > .5 || p > 7.4) continue; alpha = 1 - q * 2; x = front - gap * q * 1.2; }
+          if (x > split - fanS) continue;
+          var bob = Math.sin(t * 3 + f) * 1.2, hy = groundY - fanS * 2.6 + bob;
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = f % 3 === 0 ? '#3A3A38' : f % 3 === 1 ? '#2E2E2D' : '#444442';
+          ctx.beginPath(); ctx.arc(x, hy, fanS * .45, 0, 6.283); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(x - fanS * .8, groundY); ctx.lineTo(x - fanS * .8, hy + fanS * 1.1); ctx.quadraticCurveTo(x - fanS * .7, hy + fanS * .55, x, hy + fanS * .55); ctx.quadraticCurveTo(x + fanS * .7, hy + fanS * .55, x + fanS * .8, hy + fanS * 1.1); ctx.lineTo(x + fanS * .8, groundY); ctx.fill();
+          // the one leaving holds up their new tee
+          if (f === -1) { teePath(ctx, x, hy - fanS * 1.5, fanS * 1.9); ctx.fillStyle = 'rgba(230,227,220,' + alpha + ')'; ctx.fill(); }
+          ctx.globalAlpha = 1;
+        }
+        ctx.fillStyle = 'rgba(' + BONE + ',.12)'; ctx.fillRect(m, groundY, split - m, 1);
+
+        // --- live stats: units, revenue and stock by size
+        var sx0 = split + W * .03, sw = W - m - sx0;
+        var perStop = Math.floor((7.4 - 1.2) / STEP), units = 900 + cycle * perStop + sold, revenue = units * 42;
+        label(ctx, p > 7.4 ? 'SETTLED ✓' : 'TOUR TO DATE', sx0, H * .34, p > 7.4 ? .9 : .45);
+        ctx.font = '700 ' + Math.round(Math.min(H * .1, sw * .2)) + 'px "Helvetica Neue", Helvetica, Arial, sans-serif';
+        ctx.fillStyle = 'rgba(' + BONE + ',.95)'; ctx.fillText('$' + revenue.toLocaleString('en-US'), sx0, H * .34 + Math.min(H * .1, sw * .2) + 4);
+        label(ctx, units.toLocaleString('en-US') + ' UNITS', sx0, H * .34 + Math.min(H * .1, sw * .2) + 20, .6);
+        var bx0 = sx0, bw = sw / 5, bTop = H * .6, bBottom = groundY - 12;
+        for (var s = 0; s < 5; s++) {
+          var cx = bx0 + bw * s + bw * .5, frac = stock[s] / START[s], hgt = (bBottom - bTop) * frac;
+          ctx.fillStyle = 'rgba(' + BONE + ',.1)'; ctx.fillRect(cx - bw * .28, bTop, bw * .56, bBottom - bTop);
+          ctx.fillStyle = stock[s] ? 'rgba(' + BONE + ',.9)' : 'rgba(' + BONE + ',0)'; ctx.fillRect(cx - bw * .28, bBottom - hgt, bw * .56, hgt);
+          label(ctx, SIZES[s], cx, groundY + 2, stock[s] ? .6 : .9, 'center');
+          if (!stock[s]) {
+            ctx.save(); ctx.translate(cx, (bTop + bBottom) / 2); ctx.rotate(-Math.PI / 2);
+            label(ctx, 'SOLD OUT', 0, 3, .9, 'center'); ctx.restore();
+          }
+        }
+      },
+      // Online store → packed box → delivered to the fan's doorstep, looping every 6 seconds.
+      ecom: function (ctx, W, H, t) {
+        var L = 6, cycle = Math.floor(t / L), p = t % L, narrow = W < 460, m = W * .05;
+        var COUNTRIES = ['PR', 'MX', 'US', 'CO', 'ES', 'DO', 'CL', 'AR', 'GB', 'JP'];
+        ctx.fillStyle = '#1A1A1A'; ctx.fillRect(0, 0, W, H);
+        var zone = (W - 2 * m) / 3, z0 = m, z1 = m + zone, z2 = m + zone * 2, base = H * .86;
+        label(ctx, narrow ? '01 SHOP' : '01  ONLINE', z0, H * .1); label(ctx, narrow ? '02 PACK' : '02  FULFILLMENT', z1 + zone * .08, H * .1); label(ctx, narrow ? '03 HOME' : '03  DELIVERY', z2 + zone * .1, H * .1);
+
+        // --- 01 phone storefront
+        var ph = Math.min(H * .66, zone * 1.25), pw = ph * .52, px = z0 + Math.min(zone * .12, 10), py = H * .18;
+        ctx.fillStyle = '#0B0B0B'; ctx.strokeStyle = 'rgba(' + BONE + ',.4)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(px, py, pw, ph, pw * .14); ctx.fill(); ctx.stroke();
+        var sx = px + pw * .08, sy = py + ph * .1, sw = pw * .84;
+        label(ctx, 'SHOP', sx, sy + 4, .7);
+        // cart with badge
+        var cartN = 2 + (p > .9 ? 1 : 0), cx = sx + sw - 6, cy = sy;
+        ctx.strokeStyle = 'rgba(' + BONE + ',.8)'; ctx.lineWidth = 1.2; ctx.strokeRect(cx - 5, cy - 4, 10, 7);
+        var pop = p > .9 && p < 1.3 ? 1 + Math.sin((p - .9) / .4 * Math.PI) * .5 : 1;
+        ctx.fillStyle = 'rgba(' + BONE + ',.95)'; ctx.beginPath(); ctx.arc(cx + 6, cy - 6, 4.5 * pop, 0, 6.283); ctx.fill();
+        ctx.fillStyle = '#0B0B0B'; ctx.font = '700 7px "Helvetica Neue", Arial, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(String(cartN), cx + 6, cy - 3.6); ctx.textAlign = 'left';
+        // 2×2 product grid
+        var cell = sw / 2, gy = sy + 12;
+        for (var i = 0; i < 4; i++) {
+          var gx = sx + (i % 2) * cell, gyy = gy + Math.floor(i / 2) * cell * 1.15;
+          ctx.fillStyle = '#242424'; ctx.fillRect(gx + 2, gyy, cell - 4, cell - 4);
+          teePath(ctx, gx + cell / 2, gyy + (cell - 4) / 2, cell * .62); ctx.fillStyle = ['#E6E3DC', '#4A4A48', '#C4C0B8', '#E6E3DC'][i]; ctx.fill();
+          ctx.fillStyle = 'rgba(' + BONE + ',.25)'; ctx.fillRect(gx + 2, gyy + cell - 1, (cell - 4) * .6, 2);
+        }
+        // add-to-cart button, with a tap
+        var by = gy + cell * 2.35, tapped = p > .6 && p < 1.4;
+        ctx.fillStyle = tapped ? 'rgba(' + BONE + ',.95)' : 'rgba(' + BONE + ',.15)'; ctx.fillRect(sx, by, sw, 12);
+        ctx.font = '700 6.5px "Helvetica Neue", Arial, sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = tapped ? '#0B0B0B' : 'rgba(' + BONE + ',.8)';
+        ctx.fillText(tapped ? 'ADDED ✓' : 'ADD TO CART', sx + sw / 2, by + 8.5); ctx.textAlign = 'left';
+        var fingerX = sx + sw * .55, fingerY = by + 6 + (1 - ease(seg(p, .2, .6))) * 30;
+        if (p < 1.2) {
+          if (p > .55 && p < .9) { ctx.strokeStyle = 'rgba(' + BONE + ',' + (1 - seg(p, .55, .9)) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(fingerX, by + 6, 6 + seg(p, .55, .9) * 12, 0, 6.283); ctx.stroke(); }
+          ctx.fillStyle = 'rgba(' + BONE + ',.9)'; ctx.beginPath(); ctx.arc(fingerX, fingerY, 5, 0, 6.283); ctx.fill();
+        }
+        // new-order toast
+        var delivered = p > 4.7, toast = delivered ? ease(seg(p, 4.8, 5.1)) - ease(seg(p, 5.8, 6)) : ease(seg(p, 1.1, 1.4)) - ease(seg(p, 2.8, 3.1));
+        if (toast > 0) {
+          var ty = py + ph - 26 - 8 * (1 - toast);
+          ctx.globalAlpha = toast;
+          ctx.fillStyle = 'rgba(' + BONE + ',.95)'; ctx.fillRect(sx, ty, sw, 18);
+          ctx.fillStyle = '#0B0B0B'; ctx.font = '700 6.5px "Helvetica Neue", Arial, sans-serif';
+          ctx.fillText(delivered ? 'DELIVERED ✓' : (narrow ? 'ORDER · ' : 'NEW ORDER · ') + COUNTRIES[cycle % COUNTRIES.length], sx + 4, ty + 7.5);
+          ctx.fillStyle = 'rgba(11,11,11,.6)'; ctx.fillText('#' + (10480 + cycle), sx + 4, ty + 15);
+          ctx.globalAlpha = 1;
+        }
+
+        // --- 02 box being packed
+        var bxC = z1 + zone * .5, boxW = Math.min(zone * .55, H * .32), boxH = boxW * .62, boxTop = base - boxH;
+        var doorX = z2 + zone * .1 + zone * .9 * .3, travel = ease(seg(p, 3.6, 4.6)), boxX = bxC + (doorX + zone * .16 - bxC) * travel, shrink = 1 - travel * .5;
+        // conveyor
+        ctx.fillStyle = '#242424'; ctx.fillRect(z1 + zone * .05, base, zone * 1.4, 5);
+        for (var r = 0; r < 9; r++) { ctx.fillStyle = '#121212'; ctx.beginPath(); ctx.arc(z1 + zone * .1 + r * zone * .16 - (t * 30 % (zone * .16)) * (p > 3.6 && p < 4.6 ? 1 : 0), base + 2.5, 1.6, 0, 6.283); ctx.fill(); }
+        // the tee flies from the phone into the box
+        var fly = seg(p, 1.3, 2.1);
+        if (fly > 0 && fly < 1) {
+          var e = ease(fly), fx = sx + sw * .25 + (bxC - sx - sw * .25) * e, fy = gy + cell * .5 + (boxTop - gy - cell * .5) * e - Math.sin(Math.PI * e) * H * .22;
+          teePath(ctx, fx, fy, boxW * (.55 - e * .1)); ctx.fillStyle = '#E6E3DC'; ctx.fill();
+        }
+        // --- 03 the fan's house: the box lands on the doorstep and the door opens to take it in
+        var hX = z2 + zone * .1, hW = zone * .9, wallTop = H * .42, roofTop = H * .2;
+        ctx.fillStyle = '#121212'; ctx.fillRect(hX + hW * .04, wallTop, hW * .92, base - wallTop);
+        ctx.fillStyle = '#242424'; ctx.beginPath(); ctx.moveTo(hX - hW * .04, wallTop + 2); ctx.lineTo(hX + hW / 2, roofTop); ctx.lineTo(hX + hW * 1.04, wallTop + 2); ctx.closePath(); ctx.fill();
+        ctx.fillRect(hX + hW * .72, roofTop + H * .02, hW * .1, H * .1);
+        // window glows once the package is home
+        var glowOn = .25 + .55 * ease(seg(p, 5.4, 5.8)) * (1 - seg(p, 5.95, 6));
+        var wX = hX + hW * .58, wY = wallTop + (base - wallTop) * .18, wW = hW * .28, wH = (base - wallTop) * .32;
+        ctx.fillStyle = 'rgba(' + BONE + ',' + glowOn.toFixed(2) + ')'; ctx.fillRect(wX, wY, wW, wH);
+        ctx.fillStyle = '#121212'; ctx.fillRect(wX + wW / 2 - 1, wY, 2, wH); ctx.fillRect(wX, wY + wH / 2 - 1, wW, 2);
+        // door: swings open, then shut
+        var dW = hW * .22, dH = (base - wallTop) * .62, dX = doorX - dW / 2, dY = base - dH;
+        var swing = ease(seg(p, 5.1, 5.4)) - ease(seg(p, 5.65, 5.95));
+        ctx.fillStyle = 'rgba(' + BONE + ',' + (.08 + swing * .5).toFixed(2) + ')'; ctx.fillRect(dX, dY, dW, dH);
+        ctx.fillStyle = '#3A3A38'; ctx.fillRect(dX, dY, dW * (1 - swing * .8), dH);
+        ctx.fillStyle = 'rgba(' + BONE + ',.6)'; ctx.beginPath(); ctx.arc(dX + dW * (1 - swing * .8) - 4, dY + dH * .55, 1.6, 0, 6.283); ctx.fill();
+        // doorstep and a bush
+        ctx.fillStyle = '#2E2E2D'; ctx.fillRect(dX - dW * .25, base - 3, dW * 2.1, 3);
+        ctx.fillStyle = '#1E1E1D'; ctx.beginPath(); ctx.arc(hX + hW * .12, base - 6, 8, Math.PI, 0); ctx.arc(hX + hW * .2, base - 7, 9, Math.PI, 0); ctx.fill();
+        if (p < 5.7) {
+          ctx.save(); ctx.globalAlpha = 1 - seg(p, 5.35, 5.65);
+          var bounce = p > 4.6 && p < 4.9 ? Math.sin(seg(p, 4.6, 4.9) * Math.PI) * 6 : 0;
+          var bw = boxW * shrink, bh = boxH * shrink, bX = boxX - bw / 2 - (p > 5.35 ? (boxX - doorX) * ease(seg(p, 5.35, 5.65)) : 0), bY = base - bh - bounce;
+          ctx.fillStyle = '#8F8A80'; ctx.fillRect(bX, bY, bw, bh);
+          ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillRect(bX, bY, bw, bh * .18);
+          // flaps fold shut
+          var close = ease(seg(p, 2.2, 2.7)), flap = bw * .5;
+          ctx.fillStyle = '#A39E94';
+          [[-1, bX], [1, bX + bw]].forEach(function (f) {
+            ctx.save(); ctx.translate(f[1], bY); ctx.rotate(f[0] * (-Math.PI * .75) * (1 - close));
+            ctx.fillRect(f[0] < 0 ? 0 : -flap, -2, flap, 3); ctx.restore();
+          });
+          // tape and shipping label
+          if (close === 1) { ctx.fillStyle = 'rgba(' + BONE + ',.35)'; ctx.fillRect(bX + bw / 2 - 2, bY - 1, 4, bh * .4); }
+          var lab = ease(seg(p, 2.8, 3.2));
+          if (lab) {
+            var lw = bw * .42, lh = bh * .42, lx = bX + bw * .48, ly = bY + bh * .4 + (1 - lab) * -20;
+            ctx.globalAlpha = lab; ctx.fillStyle = '#F1EFEA'; ctx.fillRect(lx, ly, lw, lh);
+            ctx.fillStyle = '#121212';
+            for (var b = 0; b < 9; b++) ctx.fillRect(lx + lw * .1 + b * lw * .09, ly + lh * .45, b % 3 ? 1 : 2, lh * .4);
+            ctx.fillRect(lx + lw * .1, ly + lh * .15, lw * .55, 1.5);
+            ctx.globalAlpha = 1;
+          }
+          ctx.restore();
+        }
+
+        // counters
+        var orders = 3200 + cycle + (p > 4.7 ? 1 : 0);
+        label(ctx, 'DELIVERED ' + orders.toLocaleString('en-US'), hX, base + 16, p > 4.7 && p < 5.6 ? 1 : .7);
+        if (!narrow) label(ctx, '42 COUNTRIES', z0, base + 16, .4);
+        if (!narrow) label(ctx, 'SHIPPED ✓', z1 + zone * .08, base + 16, p > 3.4 ? .8 : .25);
+      },
+      // The brand on the left gets licensed onto one product after another; each is stamped and shelved.
+      licensing: function (ctx, W, H, t) {
+        var PD = 2.6, n = Math.floor(t / PD), p = t % PD, narrow = W < 460, m = W * .05;
+        var BONEFILL = '#E6E3DC', INKMARK = '#121212';
+        ctx.fillStyle = '#1A1A1A'; ctx.fillRect(0, 0, W, H);
+
+        // Each product draws itself around (x, y) at size s and returns where the logo sits on it.
+        var PRODUCTS = [
+          { name: 'FOOTWEAR', draw: function (x, y, s) {
+            ctx.beginPath(); ctx.moveTo(x - s * .55, y + s * .2); ctx.lineTo(x - s * .5, y - s * .12); ctx.quadraticCurveTo(x - s * .35, y - s * .2, x - s * .18, y - s * .14);
+            ctx.lineTo(x + s * .05, y - s * .02); ctx.quadraticCurveTo(x + s * .45, y + s * .02, x + s * .55, y + s * .14); ctx.lineTo(x + s * .55, y + s * .2); ctx.closePath();
+            ctx.fillStyle = BONEFILL; ctx.fill(); ctx.fillStyle = '#4A4A48'; ctx.fillRect(x - s * .56, y + s * .2, s * 1.12, s * .07);
+            return [x - s * .18, y + s * .05, s * .1]; } },
+          { name: 'HEADWEAR', draw: function (x, y, s) {
+            ctx.fillStyle = BONEFILL; ctx.beginPath(); ctx.arc(x, y + s * .1, s * .36, Math.PI, 0); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(x + s * .3, y + s * .1); ctx.quadraticCurveTo(x + s * .6, y + s * .08, x + s * .66, y + s * .16); ctx.lineTo(x + s * .3, y + s * .16); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.arc(x, y - s * .26, s * .03, 0, 6.283); ctx.fill();
+            return [x - s * .05, y - s * .07, s * .12]; } },
+          { name: 'HOMEWARE', draw: function (x, y, s) {
+            ctx.fillStyle = BONEFILL; ctx.fillRect(x - s * .26, y - s * .3, s * .5, s * .55);
+            ctx.strokeStyle = BONEFILL; ctx.lineWidth = s * .07; ctx.beginPath(); ctx.arc(x + s * .26, y - s * .03, s * .13, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+            return [x - s * .01, y - s * .03, s * .14]; } },
+          { name: 'SKATE', draw: function (x, y, s) {
+            ctx.fillStyle = BONEFILL; ctx.beginPath(); ctx.roundRect(x - s * .62, y - s * .1, s * 1.24, s * .2, s * .1); ctx.fill();
+            ctx.fillStyle = '#4A4A48'; [-.38, .38].forEach(function (o) { ctx.beginPath(); ctx.arc(x + s * o - s * .08, y + s * .15, s * .045, 0, 6.283); ctx.arc(x + s * o + s * .08, y + s * .15, s * .045, 0, 6.283); ctx.fill(); });
+            return [x, y, s * .08]; } },
+          { name: 'COLLECTIBLES', draw: function (x, y, s) {
+            ctx.fillStyle = BONEFILL;
+            [[-.17, -.33], [.17, -.33]].forEach(function (e) { ctx.beginPath(); ctx.arc(x + s * e[0], y + s * e[1], s * .09, 0, 6.283); ctx.fill(); });
+            ctx.beginPath(); ctx.arc(x, y - s * .2, s * .19, 0, 6.283); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(x, y + s * .12, s * .24, s * .2, 0, 0, 6.283); ctx.fill();
+            ctx.fillStyle = INKMARK; ctx.beginPath(); ctx.arc(x - s * .07, y - s * .23, s * .02, 0, 6.283); ctx.arc(x + s * .07, y - s * .23, s * .02, 0, 6.283); ctx.fill();
+            return [x, y + s * .12, s * .11]; } },
+          { name: 'ACCESSORIES', draw: function (x, y, s) {
+            ctx.strokeStyle = BONEFILL; ctx.lineWidth = s * .035; ctx.beginPath(); ctx.arc(x, y - s * .22, s * .14, Math.PI, 0); ctx.stroke();
+            ctx.fillStyle = BONEFILL; ctx.beginPath(); ctx.moveTo(x - s * .3, y - s * .22); ctx.lineTo(x + s * .3, y - s * .22); ctx.lineTo(x + s * .26, y + s * .3); ctx.lineTo(x - s * .26, y + s * .3); ctx.closePath(); ctx.fill();
+            return [x, y + s * .04, s * .15]; } }
+        ];
+
+        // --- the brand
+        var split = W * (narrow ? .36 : .34), bx = m + (split - m) / 2, by = H * .42, br = Math.min(H * .2, (split - m) * .3);
+        label(ctx, '01  THE BRAND', m, H * .1);
+        ctx.strokeStyle = 'rgba(' + BONE + ',.12)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.arc(bx, by, br * 1.45, 0, 6.283); ctx.stroke(); ctx.setLineDash([]);
+        var pulse = p > .45 && p < .7 ? 1 + Math.sin(seg(p, .45, .7) * Math.PI) * .06 : 1;
+        mark(ctx, bx, by, br * pulse, 'rgba(' + BONE + ',.95)', 1);
+        label(ctx, '© ARTIST', bx, by + br * 1.45 + 16, .45, 'center');
+
+        // --- the product stage
+        var sx0 = split + W * .04, sw = W - m - sx0, cx = sx0 + sw * .4, cy = H * .46, s = Math.min(H * .46, sw * .48);
+        label(ctx, narrow ? '02 PRODUCT' : '02  LICENSED PRODUCT', sx0, H * .1);
+        var prod = PRODUCTS[n % PRODUCTS.length];
+        // a spotlight pool on the pedestal
+        var g = ctx.createRadialGradient(cx, cy + s * .4, 0, cx, cy + s * .4, s * .7);
+        g.addColorStop(0, 'rgba(' + BONE + ',.1)'); g.addColorStop(1, 'rgba(' + BONE + ',0)');
+        ctx.fillStyle = g; ctx.fillRect(cx - s, cy - s * .4, s * 2, s * 1.2);
+        ctx.fillStyle = '#242424'; ctx.fillRect(cx - s * .55, cy + s * .38, s * 1.1, 4);
+        var inn = ease(seg(p, 0, .4)), out = ease(seg(p, 2.15, 2.55));
+        var px = cx + (1 - inn) * sw * .5 - out * sw * .3, alpha = Math.min(inn, 1 - out);
+        ctx.save(); ctx.globalAlpha = alpha;
+        var spot = prod.draw(px, cy, s);
+        if (p > 1.1) mark(ctx, spot[0], spot[1], spot[2], INKMARK, 1);
+        ctx.restore();
+        label(ctx, prod.name, cx - s * .1, cy + s * .38 + 18, .5 * alpha, 'center');
+        // the mark flies from the brand onto the product
+        var fly = seg(p, .5, 1.1);
+        if (fly > 0 && fly < 1) {
+          var e = ease(fly), fx = bx + (spot[0] - bx) * e, fy = by + (spot[1] - by) * e - Math.sin(Math.PI * e) * H * .2;
+          mark(ctx, fx, fy, br + (spot[2] - br) * e, 'rgba(' + BONE + ',.9)', 1);
+        }
+        // LICENSED stamp slams down
+        var st = seg(p, 1.3, 1.5);
+        if (st > 0 && out < 1) {
+          var sc = 1.8 - .8 * ease(st), sxp = px + s * .42, syp = cy + s * .3;
+          ctx.save(); ctx.globalAlpha = Math.min(1, st * 2) * (1 - out); ctx.translate(sxp, syp); ctx.rotate(-.18); ctx.scale(sc, sc);
+          ctx.strokeStyle = 'rgba(' + BONE + ',.95)'; ctx.lineWidth = 1.5; ctx.strokeRect(-34, -10, 68, 20);
+          label(ctx, 'LICENSED ✓', 0, 3.5, .95, 'center');
+          ctx.restore();
+        }
+        // royalties
+        var deals = 120 + n + (p > 1.4 ? 1 : 0), roy = deals * 1850;
+        label(ctx, 'ROYALTIES', W - m, H * .1, .45, 'right');
+        ctx.font = '700 ' + Math.round(Math.min(H * .085, sw * .1)) + 'px "Helvetica Neue", Helvetica, Arial, sans-serif';
+        ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(' + BONE + ',' + (p > 1.4 && p < 1.9 ? 1 : .85) + ')';
+        ctx.fillText('$' + roy.toLocaleString('en-US'), W - m, H * .1 + Math.min(H * .085, sw * .1) + 6); ctx.textAlign = 'left';
+        label(ctx, deals + ' PRODUCTS', W - m, H * .1 + Math.min(H * .085, sw * .1) + 20, .55, 'right');
+
+        // --- the shelf of licensed products
+        var shelfY = H * .9, slots = narrow ? 4 : 6, slotW = (W - 2 * m) / slots, ss = Math.min(slotW * .55, H * .14);
+        ctx.fillStyle = 'rgba(' + BONE + ',.18)'; ctx.fillRect(m, shelfY, W - 2 * m, 1.5);
+        var done = n + (out > .5 ? 1 : 0);
+        for (var k = 0; k < slots; k++) {
+          var idx = done - slots + k;
+          if (idx < 0) continue;
+          var it = PRODUCTS[idx % PRODUCTS.length], sxk = m + slotW * (k + .5);
+          ctx.save(); ctx.globalAlpha = k === slots - 1 && out > .5 ? seg(out, .5, 1) : .55;
+          var sp = it.draw(sxk, shelfY - ss * .45, ss);
+          mark(ctx, sp[0], sp[1], sp[2], INKMARK, 1);
+          ctx.restore();
+        }
+      },
+      // A dot-matrix world: arcs leave the Puerto Rico HQ one by one and light up new markets.
+      expansion: function (ctx, W, H, t, state) {
+        var HQ = { name: 'PUERTO RICO', lon: -66.1, lat: 18.4 };
+        var MARKETS = [
+          ['MIAMI', -80.2, 25.8, 'STORE OPEN'], ['MEXICO CITY', -99.1, 19.4, 'LOCAL PRODUCTION'], ['BOGOTÁ', -74.1, 4.7, 'RETAIL PARTNER'],
+          ['MADRID', -3.7, 40.4, 'STORE OPEN'], ['SÃO PAULO', -46.6, -23.5, 'POP-UP'], ['LONDON', -0.1, 51.5, 'RETAIL PARTNER'],
+          ['LOS ANGELES', -118.2, 34.1, 'LICENSING'], ['BUENOS AIRES', -58.4, -34.6, 'STORE OPEN'], ['PARIS', 2.35, 48.9, 'POP-UP'],
+          ['TOKYO', 139.7, 35.7, 'LICENSING'], ['BERLIN', 13.4, 52.5, 'LOCAL PRODUCTION'], ['SYDNEY', 151.2, -33.9, 'RETAIL PARTNER']
+        ];
+        var narrow = W < 460, m = W * .05;
+        // Phones zoom in on the Americas and Europe; the far markets would be specks.
+        var lonMin = narrow ? -128 : -165, lonMax = narrow ? 42 : 180, latMax = narrow ? 62 : 72, latMin = narrow ? -46 : -48;
+        MARKETS = MARKETS.filter(function (mk) { return mk[1] > lonMin && mk[1] < lonMax; });
+        var STEP = 1.4, HOLD = 2.4, L = MARKETS.length * STEP + HOLD, p = t % L;
+        ctx.fillStyle = '#1A1A1A'; ctx.fillRect(0, 0, W, H);
+
+        // Map frame and a cached dot grid of the land, rebuilt only when the size changes.
+        var top = H * .2, bottom = H * .97, key = W + 'x' + H;
+        if (state.key !== key) {
+          state.key = key; state.dots = null;
+          var sx = (W - 2 * m) / (lonMax - lonMin), sy = (bottom - top) / (latMax - latMin), k = Math.min(sx, sy * 1.15);
+          var mapW = (lonMax - lonMin) * k, mapH = (latMax - latMin) * k / 1.15, ox = (W - mapW) / 2, oy = top + (bottom - top - mapH) / 2;
+          state.proj = function (lon, lat) { return [ox + (lon - lonMin) * k, oy + (latMax - lat) * k / 1.15]; };
+          state.box = [ox, oy, mapW, mapH, lonMin, latMax, k];
+        }
+        if (!state.dots && window.__mxWorld && window.d3 && window.topojson) {
+          var b = state.box, off = document.createElement('canvas'), ow = Math.ceil(b[2]), oh = Math.ceil(b[3]);
+          off.width = ow; off.height = oh;
+          var octx = off.getContext('2d');
+          var proj = d3.geoEquirectangular().scale(1).translate([0, 0]);
+          // Map lon/lat straight onto the offscreen canvas with the same linear transform as state.proj.
+          var land = topojson.feature(window.__mxWorld, window.__mxWorld.objects.countries);
+          var path = d3.geoPath(d3.geoTransform({ point: function (lon, lat) { this.stream.point((lon - b[4]) * b[6], (b[5] - lat) * b[6] / 1.15); } }), octx);
+          octx.fillStyle = '#fff'; octx.beginPath(); path(land); octx.fill();
+          var data = octx.getImageData(0, 0, ow, oh).data, gap = Math.max(4, Math.round(W / 130)), dots = [];
+          for (var yy = gap / 2; yy < oh; yy += gap) for (var xx = gap / 2; xx < ow; xx += gap) {
+            if (data[(Math.floor(yy) * ow + Math.floor(xx)) * 4 + 3] > 100) dots.push([b[0] + xx, b[1] + yy]);
+          }
+          state.dots = dots; state.gap = gap;
+        } else if (!window.__mxWorld && !state.loading) {
+          state.loading = true;
+          fetch('assets/data/world.json').then(function (r) { return r.json(); }).then(function (w) { window.__mxWorld = w; });
+        }
+
+        var proj2 = state.proj, hq = proj2(HQ.lon, HQ.lat);
+        var opened = Math.min(MARKETS.length, Math.floor(p / STEP)), cur = p < MARKETS.length * STEP ? Math.floor(p / STEP) : -1, q = cur >= 0 ? (p % STEP) / STEP : 1;
+        var fadeAll = 1 - seg(p, L - .5, L);
+        var pts = MARKETS.map(function (mk) { return proj2(mk[1], mk[2]); });
+
+        // land dots, brighter near markets that are open
+        if (state.dots) {
+          var ds = Math.max(1.4, state.gap * .42);
+          for (var i = 0; i < state.dots.length; i++) {
+            var d = state.dots[i], a = .13;
+            for (var j = 0; j < opened; j++) { var dx = d[0] - pts[j][0], dy = d[1] - pts[j][1]; if (dx * dx + dy * dy < 900) { a = .13 + .3 * fadeAll; break; } }
+            ctx.fillStyle = 'rgba(' + BONE + ',' + a.toFixed(2) + ')'; ctx.fillRect(d[0] - ds / 2, d[1] - ds / 2, ds, ds);
+          }
+        }
+
+        function bez(a, b, u) {
+          var cx2 = (a[0] + b[0]) / 2, cy2 = Math.min(a[1], b[1]) - Math.hypot(b[0] - a[0], b[1] - a[1]) * .3;
+          var v = 1 - u; return [v * v * a[0] + 2 * v * u * cx2 + u * u * b[0], v * v * a[1] + 2 * v * u * cy2 + u * u * b[1]];
+        }
+        // arcs: finished ones faint, the current one drawing with a bright head
+        for (var a2 = 0; a2 <= Math.min(opened, MARKETS.length - 1); a2++) {
+          var isCur = a2 === cur, prog = isCur ? ease(seg(q, 0, .55)) : (a2 < opened ? 1 : 0);
+          if (!prog) continue;
+          ctx.strokeStyle = 'rgba(' + BONE + ',' + ((isCur ? .7 : .22) * fadeAll).toFixed(2) + ')'; ctx.lineWidth = isCur ? 1.4 : 1;
+          ctx.beginPath(); ctx.moveTo(hq[0], hq[1]);
+          for (var s2 = 1; s2 <= 40; s2++) { var u = prog * s2 / 40, pt = bez(hq, pts[a2], u); ctx.lineTo(pt[0], pt[1]); }
+          ctx.stroke();
+          if (isCur && prog < 1) { var hd = bez(hq, pts[a2], prog); ctx.fillStyle = 'rgba(255,255,255,.95)'; ctx.beginPath(); ctx.arc(hd[0], hd[1], 2.6, 0, 6.283); ctx.fill(); }
+        }
+        // market dots, with a ring burst on arrival
+        for (var c = 0; c < MARKETS.length; c++) {
+          var arrived = c < opened || (c === cur && q > .55);
+          if (!arrived) continue;
+          var P = pts[c];
+          if (c === cur) { var rb = seg(q, .55, 1); ctx.strokeStyle = 'rgba(' + BONE + ',' + (1 - rb).toFixed(2) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(P[0], P[1], 3 + rb * 14, 0, 6.283); ctx.stroke(); }
+          ctx.fillStyle = 'rgba(' + BONE + ',' + (.95 * fadeAll).toFixed(2) + ')'; ctx.beginPath(); ctx.arc(P[0], P[1], 2.8, 0, 6.283); ctx.fill();
+        }
+        // HQ pulse
+        var hp = (t % 1.6) / 1.6;
+        ctx.strokeStyle = 'rgba(' + BONE + ',' + (.8 * (1 - hp)).toFixed(2) + ')'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(hq[0], hq[1], 4 + hp * 16, 0, 6.283); ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(hq[0], hq[1], 4.2, 0, 6.283); ctx.fill();
+        ctx.fillStyle = '#1A1A1A'; ctx.beginPath(); ctx.arc(hq[0], hq[1], 1.6, 0, 6.283); ctx.fill();
+        label(ctx, 'HQ', hq[0] + 9, hq[1] + 14, .7);
+
+        // label card for the market that just opened
+        if (cur >= 0 && q > .55) {
+          var mk = MARKETS[cur], P2 = pts[cur], ca = ease(seg(q, .55, .75)) * (1 - seg(q, .92, 1));
+          ctx.font = '700 9px "Helvetica Neue", Helvetica, Arial, sans-serif';
+          var cw = Math.max(ctx.measureText(mk[0]).width, ctx.measureText(mk[3]).width) * 1.15 + 16, ch = 30;
+          var lx = P2[0] + cw + 14 > W - 4 ? P2[0] - cw - 10 : P2[0] + 10, ly = Math.max(top, P2[1] - ch - 8);
+          ctx.globalAlpha = ca;
+          ctx.fillStyle = 'rgba(' + BONE + ',.95)'; ctx.fillRect(lx, ly, cw, ch);
+          ctx.fillStyle = '#121212'; ctx.fillText(mk[0].split('').join(String.fromCharCode(8202)), lx + 8, ly + 12);
+          ctx.fillStyle = 'rgba(18,18,18,.6)'; ctx.fillText(mk[3].split('').join(String.fromCharCode(8202)), lx + 8, ly + 23);
+          ctx.globalAlpha = 1;
+        }
+
+        // header: label left, market counter right
+        label(ctx, narrow ? 'FROM PUERTO RICO' : 'FROM PUERTO RICO TO THE WORLD', m, H * .1);
+        var count = opened + (cur >= 0 && q > .55 ? 1 : 0) - (cur >= 0 && q > .55 && cur < opened ? 1 : 0);
+        var fs = Math.round(Math.min(H * .1, W * .06));
+        ctx.font = '700 ' + fs + 'px "Helvetica Neue", Helvetica, Arial, sans-serif'; ctx.textAlign = 'right';
+        ctx.fillStyle = 'rgba(' + BONE + ',.95)'; ctx.fillText(String(count + 30), W - m, H * .07 + fs * .8);
+        ctx.textAlign = 'left';
+        label(ctx, 'MARKETS', W - m - ctx.measureText(String(count + 30)).width - 8, H * .07 + fs * .8, .5, 'right');
+      }
+    };
+
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.querySelectorAll('.svc-art').forEach(function (canvas) {
+      var scene = SCENES[canvas.getAttribute('data-art')];
+      if (!scene) return;
+      var ctx = canvas.getContext('2d'), W = 0, H = 0, dpr = 1, visible = false, running = false, t0 = performance.now(), state = {};
+      function size() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        W = canvas.clientWidth; H = canvas.clientHeight;
+        if (!W || !H) return;
+        canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+        render(reduceMotion ? 3.4 : (performance.now() - t0) / 1000);
+      }
+      function render(t) { if (!W) return; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); scene(ctx, W, H, t, state); }
+      function frame(now) {
+        if (!visible || reduceMotion) { running = false; return; }
+        render((now - t0) / 1000);
+        requestAnimationFrame(frame);
+      }
+      function start() { if (!running && visible && !reduceMotion) { running = true; requestAnimationFrame(frame); } }
+      // Panels open and close, so watch the size as well as visibility.
+      if ('ResizeObserver' in window) new ResizeObserver(size).observe(canvas);
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) { visible = es[0].isIntersecting && canvas.clientHeight > 0; if (visible) { size(); start(); } }).observe(canvas);
+      } else { visible = true; start(); }
+      size();
+    });
+  })();
+
   /* ---------- Merch carousel ---------- */
   (function () {
     var wrap = document.querySelector('.merch');

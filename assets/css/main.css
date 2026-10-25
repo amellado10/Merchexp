@@ -266,7 +266,7 @@ body.menu-open .site-header { background:var(--mx-ink-900); border-color:transpa
 .js .acc:not(.is-open) .acc__panel { grid-template-rows:0fr; }
 .acc__inner { min-height:0; overflow:hidden; display:grid; gap:20px; padding-left:44px; }
 .acc__inner p { padding-top:2px; font:400 16px/1.5 var(--font-sans); color:var(--text-secondary); max-width:460px; }
-.acc__well { height:200px; margin-bottom:28px; }
+.acc__well { height:220px; margin-bottom:28px; }
 .acc__inner > * { transition:opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
 .js .acc:not(.is-open) .acc__inner > * { opacity:0; transform:translateY(12px); }
 
@@ -274,7 +274,7 @@ body.menu-open .site-header { background:var(--mx-ink-900); border-color:transpa
   .acc__btn { grid-template-columns:80px 1fr 32px; padding:28px 0; }
   .acc__icon { width:24px; height:24px; }
   .acc__inner { grid-template-columns:1fr 1fr; gap:24px; padding-left:88px; }
-  .acc__well { height:220px; margin-bottom:40px; }
+  .acc__well { height:280px; margin-bottom:40px; }
 }
 
 /* ---------- Selected work ---------- */
