@@ -397,6 +397,17 @@ body.menu-open .site-header { background:var(--mx-ink-900); border-color:transpa
   .expansion__topics { padding:64px 48px 64px 0; }
 }
 
+/* ---------- B2B portal placeholder page ---------- */
+.b2b { padding-top:var(--header-h); background:var(--surface-paper); }
+.b2b__hero { min-height:calc(100svh - var(--header-h)); }
+.b2b__status { display:inline-flex; align-items:center; gap:8px; margin-top:24px; padding:6px 12px; border:1px solid var(--border-paper); border-radius:999px; font:700 10px/1.2 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; align-self:flex-start; }
+.b2b__status span { width:8px; height:8px; border-radius:50%; background:var(--text-inverse); }
+@media (prefers-reduced-motion:no-preference) { .b2b__status span { animation:b2b-blink 1.6s var(--ease-in-out) infinite; } }
+@keyframes b2b-blink { 50% { opacity:.25; } }
+.b2b .expansion__copy { margin-top:20px; }
+.b2b__actions { display:flex; flex-wrap:wrap; align-items:center; gap:20px; }
+.b2b__back { font:700 11px/1 var(--font-sans); letter-spacing:.06em; text-transform:uppercase; }
+
 /* ---------- Contact ---------- */
 .contact { text-align:center; }
 .contact__title { max-width:1100px; margin:0 auto; }
