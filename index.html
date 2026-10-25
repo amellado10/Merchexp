@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Merchexp™ — Your favorite artist’s favorite merch</title>
-  <meta name="description" content="Merchexp is a Los Angeles merch company for artists, creators and brands — design &amp; production, tour &amp; live sales, e-commerce &amp; retail, brand licensing and upcycling.">
+  <meta name="description" content="Merchexp is a Puerto Rico merch company for artists, creators and brands — design &amp; production, tour &amp; live sales, e-commerce &amp; retail, brand licensing and global expansion.">
   <meta name="theme-color" content="#121212">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Merchexp™ — Your favorite artist’s favorite merch">
-  <meta property="og:description" content="Design, production, tour sales, e-commerce, licensing and upcycling. Based in Los Angeles, operating worldwide.">
+  <meta property="og:description" content="Design, production, tour sales, e-commerce, licensing and global expansion. Based in Puerto Rico, operating worldwide.">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +20,8 @@
     document.documentElement.classList.add('js');
     setTimeout(function () { document.documentElement.classList.add('is-loaded'); }, 3000);
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </head>
 <body>
@@ -31,7 +33,8 @@
       <nav class="site-nav" aria-label="Primary">
         <a href="#services">Services</a>
         <a href="#work">Work</a>
-        <a href="#upcycling">Upcycling</a>
+        <a href="#tour">Tour</a>
+        <a href="#expansion">Global Expansion</a>
         <a href="#contact">Contact</a>
       </nav>
       <a class="site-header__brand" href="#top" aria-label="Merchexp — back to top">
@@ -51,13 +54,14 @@
     <nav class="menu__nav" aria-label="Mobile">
       <a href="#services" style="--i:0">Services</a>
       <a href="#work" style="--i:1">Work</a>
-      <a href="#upcycling" style="--i:2">Upcycling</a>
-      <a href="#contact" style="--i:3">Contact</a>
+      <a href="#tour" style="--i:2">Tour</a>
+      <a href="#expansion" style="--i:3">Global Expansion</a>
+      <a href="#contact" style="--i:4">Contact</a>
     </nav>
     <div class="menu__foot">
       <a href="mailto:info@merchexp.com">info@merchexp.com</a>
       <div class="locators">
-        <span>Based in<br>Los Angeles</span>
+        <span>Based in<br>Puerto Rico</span>
         <span>Operating<br>worldwide</span>
       </div>
     </div>
@@ -81,15 +85,15 @@
       </h1>
 
       <figure class="well hero__well" data-parallax>
-        <!-- Replace with: <img src="assets/img/hero.jpg" alt="…" class="well__media"> -->
-        <div class="well__media"></div>
-        <figcaption class="well__label">Hero campaign image — full bleed, dark studio</figcaption>
+        <!-- Generated concert scene (main.js). To use a photo instead: <img src="assets/img/hero.jpg" alt="…" class="well__media"> -->
+        <canvas class="well__media hero__art" aria-hidden="true"></canvas>
+        <span class="hero__hint" aria-hidden="true">Tap to fire the T-shirt cannon</span>
       </figure>
 
       <div class="hero__foot">
-        <span class="locator">Based in<br>Los Angeles</span>
+        <span class="locator">Based in<br>Puerto Rico</span>
         <div class="tagline-stack" lang="en">
-          <div>Merch experience co.</div>
+          <div>Merchexp</div>
           <div lang="ja">マーチ・エクスペリエンス・カンパニー</div>
           <div lang="it">Azienda di esperienze merch</div>
           <div lang="zh">周边体验公司</div>
@@ -100,20 +104,11 @@
       </div>
     </section>
 
-    <!-- ============ Statement ============ -->
-    <section class="statement" aria-label="Statement">
-      <h2 class="statement__text" data-reveal="lines">
-        <span class="ln ln--serif"><span>Your Favorite</span></span>
-        <span class="ln ln--serif"><span>Artist’s</span></span>
-        <span class="ln ln--sans"><span>Favorite Merch.</span></span>
-      </h2>
-    </section>
-
     <!-- ============ Marquee ============ -->
-    <div class="marquee" aria-label="Design &amp; Production / Tour &amp; Live Sales / E-Commerce &amp; Retail / Brand Licensing / Sustainability &amp; Upcycling" role="img">
+    <div class="marquee" aria-label="Design &amp; Production / Tour &amp; Live Sales / E-Commerce &amp; Retail / Brand Licensing / Global Expansion" role="img">
       <div class="marquee__track" aria-hidden="true">
-        <span>Design &amp; Production</span><i>/</i><span>Tour &amp; Live Sales</span><i>/</i><span>E-Commerce &amp; Retail</span><i>/</i><span>Brand Licensing</span><i>/</i><span>Sustainability &amp; Upcycling</span><i>/</i>
-        <span>Design &amp; Production</span><i>/</i><span>Tour &amp; Live Sales</span><i>/</i><span>E-Commerce &amp; Retail</span><i>/</i><span>Brand Licensing</span><i>/</i><span>Sustainability &amp; Upcycling</span><i>/</i>
+        <span>Design &amp; Production</span><i>/</i><span>Tour &amp; Live Sales</span><i>/</i><span>E-Commerce &amp; Retail</span><i>/</i><span>Brand Licensing</span><i>/</i><span>Global Expansion</span><i>/</i>
+        <span>Design &amp; Production</span><i>/</i><span>Tour &amp; Live Sales</span><i>/</i><span>E-Commerce &amp; Retail</span><i>/</i><span>Brand Licensing</span><i>/</i><span>Global Expansion</span><i>/</i>
       </div>
     </div>
 
@@ -122,8 +117,7 @@
       <div class="section__head">
         <p class="eyebrow" data-reveal>A one-stop shop for your merch needs</p>
         <h2 class="headline headline--xl" data-reveal="lines">
-          <span class="ln"><span>Drop it like</span></span>
-          <span class="ln"><span>it’s hot.</span></span>
+          <span class="ln"><span>What we do</span></span>
         </h2>
       </div>
 
@@ -183,12 +177,12 @@
         <div class="acc" data-reveal>
           <h3 class="acc__heading">
             <button class="acc__btn" type="button" aria-expanded="false" aria-controls="svc-5" id="svc-5-btn">
-              <span class="acc__n">05</span><span class="acc__title">Sustainability &amp; Upcycling</span><span class="acc__icon" aria-hidden="true"></span>
+              <span class="acc__n">05</span><span class="acc__title">Global Expansion</span><span class="acc__icon" aria-hidden="true"></span>
             </button>
           </h3>
           <div class="acc__panel" id="svc-5" role="region" aria-labelledby="svc-5-btn">
             <div class="acc__inner">
-              <p>The Radical Upcycling Project turns unsold deadstock into new recycled-cotton apparel.</p>
+              <p>We take artist merch into new countries: local production, regional stores, and retail and licensing partners on the ground.</p>
               <figure class="well acc__well"><div class="well__media"></div><figcaption class="well__label">Case image</figcaption></figure>
             </div>
           </div>
@@ -223,8 +217,8 @@
         <article class="card" data-reveal style="--i:2">
           <figure class="well card__well"><div class="well__media"></div><figcaption class="well__label">Project image</figcaption></figure>
           <p class="card__client">The Lowlights</p>
-          <h3 class="card__title">Reworked Crew</h3>
-          <p class="card__tag">Upcycled</p>
+          <h3 class="card__title">Collab Crew</h3>
+          <p class="card__tag">Licensing</p>
         </article>
         <article class="card" data-reveal style="--i:3">
           <figure class="well card__well"><div class="well__media"></div><figcaption class="well__label">Project image</figcaption></figure>
@@ -233,6 +227,328 @@
           <p class="card__tag">Retail</p>
         </article>
       </div>
+    </section>
+
+    <!-- ============ Statement ============ -->
+    <section class="statement" aria-label="Statement">
+      <h2 class="statement__text" data-reveal="lines">
+        <span class="ln ln--serif"><span>Your Favorite</span></span>
+        <span class="ln ln--serif"><span>Artist’s</span></span>
+        <span class="ln ln--sans"><span>Favorite Merch.</span></span>
+      </h2>
+      <!-- Merch carousel: line drawings stand in until there's product photography. The second set is a copy for the seamless loop. -->
+      <div class="merch" data-reveal>
+        <ul class="merch__track" aria-label="Merch we make">
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M38 22 52 17q8 9 16 0l14 5 18 16-10 13-8-6v58H38V45l-8 6-10-13Z"/><path d="M52 17q8 13 16 0"/></svg>
+              <figcaption>Tees</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M44 30 33 34 18 74l10 4 10-24v48h44V54l10 24 10-4-15-40-11-4"/><path d="M44 30q0-18 16-18t16 18q-7 11-16 11t-16-11Z"/><path d="M46 80h28l4 16H42Z"/><path d="M55 41v13m10-13v13"/></svg>
+              <figcaption>Hoodies</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M40 16h40l6 88H66l-6-56-6 56H34Z"/><path d="M40 25h40M60 25v14M71 25q2 12 12 13M49 25q-2 12-12 13"/></svg>
+              <figcaption>Pants</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M28 72q0-38 32-38t32 38Z"/><path d="M28 72q32-6 64 0l16 8q-38 6-80-4Z"/><path d="M60 36v36M46 40q-6 14-5 31M74 40q6 14 5 31"/><circle cx="60" cy="33" r="2.5"/></svg>
+              <figcaption>Caps</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M32 80q0-44 28-44t28 44"/><path d="M30 80h60v16H30Z"/><circle cx="60" cy="28" r="8"/><path d="M40 80v16m10-16v16m10-16v16m10-16v16m10-16v16"/></svg>
+              <figcaption>Beanies</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M38 42a9 9 0 1 1 11-14M82 42a9 9 0 1 0-11-14"/><circle cx="60" cy="52" r="25"/><ellipse cx="60" cy="60" rx="9" ry="7"/><circle cx="51" cy="47" r="1.5"/><circle cx="69" cy="47" r="1.5"/><path d="M60 58v3"/><path d="M42 72q-10 8-10 18 0 14 28 14t28-14q0-10-10-18"/></svg>
+              <figcaption>Plushies</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M40 34h40l-6 70H46Z"/><path d="M36 26h48v8H36Z"/><path d="m63 26 9-18"/><path d="M42 58h36"/></svg>
+              <figcaption>Cups</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M34 38h46v58q0 6-6 6H40q-6 0-6-6Z"/><path d="M80 50q18 0 18 16T80 82"/><path d="M48 28q-4-6 0-12m10 12q-4-6 0-12m10 12q-4-6 0-12"/></svg>
+              <figcaption>Mugs</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="38"/><path d="m60 32 7 18h19L71 61l6 19-17-11-17 11 6-19-15-11h19Z"/></svg>
+              <figcaption>Enamel pins</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="m40 8 16 62M80 8 64 70"/><path d="M54 70h12v10H54Z"/><path d="M40 82h40v30H40Z"/><path d="M48 94h24m-24 8h16"/></svg>
+              <figcaption>Lanyards</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M30 46h60l-4 60H34Z"/><path d="M44 46q0-28 16-28t16 28"/><path d="M48 70h24"/></svg>
+              <figcaption>Tote bags</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M34 14h52v92H34Z"/><path d="m28 13 14 4m36 0 14-4"/><circle cx="60" cy="50" r="16"/><path d="M44 82h32m-24 8h16"/></svg>
+              <figcaption>Posters</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M50 12h22v60l22 14q10 8-2 16l-18 2q-15 1-23-11l-4-8q-3-6 3-13Z"/><path d="M50 24h22"/></svg>
+              <figcaption>Socks</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="42"/><circle cx="60" cy="60" r="13"/><circle cx="60" cy="60" r="2.5"/><path d="M36 44q-5 8-5 16m53 16q5-8 5-16"/></svg>
+              <figcaption>Vinyl</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M30 30h60v42L72 90H30Z"/><path d="M90 72H72v18"/><circle cx="60" cy="55" r="13"/></svg>
+              <figcaption>Stickers</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="24" r="12"/><path d="M60 36v8"/><path d="M42 44h36v40q0 18-18 18T42 84Z"/><circle cx="60" cy="74" r="8"/></svg>
+              <figcaption>Keychains</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M38 22 52 17q8 9 16 0l14 5 18 16-10 13-8-6v58H38V45l-8 6-10-13Z"/><path d="M52 17q8 13 16 0"/></svg>
+              <figcaption>Tees</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M44 30 33 34 18 74l10 4 10-24v48h44V54l10 24 10-4-15-40-11-4"/><path d="M44 30q0-18 16-18t16 18q-7 11-16 11t-16-11Z"/><path d="M46 80h28l4 16H42Z"/><path d="M55 41v13m10-13v13"/></svg>
+              <figcaption>Hoodies</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M40 16h40l6 88H66l-6-56-6 56H34Z"/><path d="M40 25h40M60 25v14M71 25q2 12 12 13M49 25q-2 12-12 13"/></svg>
+              <figcaption>Pants</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M28 72q0-38 32-38t32 38Z"/><path d="M28 72q32-6 64 0l16 8q-38 6-80-4Z"/><path d="M60 36v36M46 40q-6 14-5 31M74 40q6 14 5 31"/><circle cx="60" cy="33" r="2.5"/></svg>
+              <figcaption>Caps</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M32 80q0-44 28-44t28 44"/><path d="M30 80h60v16H30Z"/><circle cx="60" cy="28" r="8"/><path d="M40 80v16m10-16v16m10-16v16m10-16v16m10-16v16"/></svg>
+              <figcaption>Beanies</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M38 42a9 9 0 1 1 11-14M82 42a9 9 0 1 0-11-14"/><circle cx="60" cy="52" r="25"/><ellipse cx="60" cy="60" rx="9" ry="7"/><circle cx="51" cy="47" r="1.5"/><circle cx="69" cy="47" r="1.5"/><path d="M60 58v3"/><path d="M42 72q-10 8-10 18 0 14 28 14t28-14q0-10-10-18"/></svg>
+              <figcaption>Plushies</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M40 34h40l-6 70H46Z"/><path d="M36 26h48v8H36Z"/><path d="m63 26 9-18"/><path d="M42 58h36"/></svg>
+              <figcaption>Cups</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M34 38h46v58q0 6-6 6H40q-6 0-6-6Z"/><path d="M80 50q18 0 18 16T80 82"/><path d="M48 28q-4-6 0-12m10 12q-4-6 0-12m10 12q-4-6 0-12"/></svg>
+              <figcaption>Mugs</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="38"/><path d="m60 32 7 18h19L71 61l6 19-17-11-17 11 6-19-15-11h19Z"/></svg>
+              <figcaption>Enamel pins</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="m40 8 16 62M80 8 64 70"/><path d="M54 70h12v10H54Z"/><path d="M40 82h40v30H40Z"/><path d="M48 94h24m-24 8h16"/></svg>
+              <figcaption>Lanyards</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M30 46h60l-4 60H34Z"/><path d="M44 46q0-28 16-28t16 28"/><path d="M48 70h24"/></svg>
+              <figcaption>Tote bags</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M34 14h52v92H34Z"/><path d="m28 13 14 4m36 0 14-4"/><circle cx="60" cy="50" r="16"/><path d="M44 82h32m-24 8h16"/></svg>
+              <figcaption>Posters</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M50 12h22v60l22 14q10 8-2 16l-18 2q-15 1-23-11l-4-8q-3-6 3-13Z"/><path d="M50 24h22"/></svg>
+              <figcaption>Socks</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="42"/><circle cx="60" cy="60" r="13"/><circle cx="60" cy="60" r="2.5"/><path d="M36 44q-5 8-5 16m53 16q5-8 5-16"/></svg>
+              <figcaption>Vinyl</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M30 30h60v42L72 90H30Z"/><path d="M90 72H72v18"/><circle cx="60" cy="55" r="13"/></svg>
+              <figcaption>Stickers</figcaption>
+            </figure>
+          </li>
+          <li class="merch__item" aria-hidden="true">
+            <figure class="merch__card">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="24" r="12"/><path d="M60 36v8"/><path d="M42 44h36v40q0 18-18 18T42 84Z"/><circle cx="60" cy="74" r="8"/></svg>
+              <figcaption>Keychains</figcaption>
+            </figure>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ Tour map ============ -->
+    <!-- Globe geometry: assets/data/world.json (Natural Earth 1:50m, simplified). -->
+    <section class="section tour" id="tour">
+      <div class="tour__body">
+        <div class="tour__intro">
+          <div class="tour__head">
+            <div>
+              <p class="eyebrow" data-reveal>2026 Tour Cities</p>
+              <h2 class="headline headline--m" data-reveal="lines"><span class="ln"><span>We ran the merch</span></span><span class="ln"><span>on every stop</span></span></h2>
+              <p class="tour__copy" data-reveal>Stadiums, arenas and theaters across five continents, one crew on the merch: stock, staffing, sales and settlement, night after night.</p>
+            </div>
+            <dl class="tour__stats" data-reveal>
+              <div><dt>Shows</dt><dd data-stat="played">93</dd></div>
+              <div><dt>Cities</dt><dd data-stat="cities">55</dd></div>
+              <div><dt>Continents</dt><dd>5</dd></div>
+            </dl>
+            <p class="tour__upcoming" data-stat="upcoming" data-reveal>+16 upcoming shows</p>
+          </div>
+
+          <div class="tour__tabs" role="group" aria-label="Turn the globe to a region" data-reveal>
+            <button type="button" class="tour__tab" data-zoom="all" aria-pressed="true">World</button>
+            <button type="button" class="tour__tab" data-zoom="na" aria-pressed="false">North America</button>
+            <button type="button" class="tour__tab" data-zoom="latam" aria-pressed="false">Latin America</button>
+            <button type="button" class="tour__tab" data-zoom="europe" aria-pressed="false">Europe</button>
+            <button type="button" class="tour__tab" data-zoom="apac" aria-pressed="false">Asia-Pacific</button>
+          </div>
+        </div>
+
+        <div class="tour__map" data-reveal>
+          <canvas class="tour__globe" role="img" aria-label="Globe marking every city on the tour. Drag to spin it."></canvas>
+          <p class="tour__hint" aria-hidden="true">Drag to spin · tap a city</p>
+          <div class="tour__tip" role="status" aria-live="polite" hidden></div>
+        </div>
+      </div>
+
+      <!-- City list hidden for now; remove `hidden` to show it again. -->
+      <div class="tour__list" hidden>
+        <section class="tour__group" data-region="na" aria-labelledby="tour-g-na">
+          <h3 class="tour__group-title" id="tour-g-na">North America <span>18</span></h3>
+          <ul>
+            <li><button class="tour__city" type="button" data-id="atl" data-region="na"><span class="tour__city-name">Atlanta</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="aus" data-region="na"><span class="tour__city-name">Austin</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="bos" data-region="na"><span class="tour__city-name">Boston</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="clt" data-region="na"><span class="tour__city-name">Charlotte</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="chi" data-region="na"><span class="tour__city-name">Chicago</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="den" data-region="na"><span class="tour__city-name">Denver</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="hou" data-region="na"><span class="tour__city-name">Houston</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="dfw" data-region="na"><span class="tour__city-name">Irving</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="lax" data-region="na"><span class="tour__city-name">Los Angeles</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="mia" data-region="na"><span class="tour__city-name">Miami</span><span class="tour__city-meta">United States · 3 shows</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="yul" data-region="na"><span class="tour__city-name">Montreal</span><span class="tour__city-meta">Canada · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="bna" data-region="na"><span class="tour__city-name">Nashville</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="nyc" data-region="na"><span class="tour__city-name">New York</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="mco" data-region="na"><span class="tour__city-name">Orlando</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="phl" data-region="na"><span class="tour__city-name">Philadelphia</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="sfo" data-region="na"><span class="tour__city-name">San Francisco</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="yyz" data-region="na"><span class="tour__city-name">Toronto</span><span class="tour__city-meta">Canada · 1 show</span></button></li>
+            <li><button class="tour__city is-upcoming" type="button" data-id="was" data-region="na"><span class="tour__city-name">Washington, D.C.</span><span class="tour__city-meta">United States · 1 show</span></button></li>
+          </ul>
+        </section>
+        <section class="tour__group" data-region="latam" aria-labelledby="tour-g-latam">
+          <h3 class="tour__group-title" id="tour-g-latam">Latin America &amp; Caribbean <span>19</span></h3>
+          <ul>
+            <li><button class="tour__city" type="button" data-id="bog" data-region="latam"><span class="tour__city-name">Bogotá</span><span class="tour__city-meta">Colombia · 2 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="bue" data-region="latam"><span class="tour__city-name">Buenos Aires</span><span class="tour__city-meta">Argentina · 5 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="gdl" data-region="latam"><span class="tour__city-name">Guadalajara</span><span class="tour__city-meta">Mexico · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="gye" data-region="latam"><span class="tour__city-name">Guayaquil</span><span class="tour__city-meta">Ecuador · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="lim" data-region="latam"><span class="tour__city-name">Lima</span><span class="tour__city-meta">Peru · 3 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="mde" data-region="latam"><span class="tour__city-name">Medellín</span><span class="tour__city-meta">Colombia · 3 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="mex" data-region="latam"><span class="tour__city-name">Mexico City</span><span class="tour__city-meta">Mexico · 9 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="mty" data-region="latam"><span class="tour__city-name">Monterrey</span><span class="tour__city-meta">Mexico · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="mid" data-region="latam"><span class="tour__city-name">Mérida</span><span class="tour__city-meta">Mexico · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="pty" data-region="latam"><span class="tour__city-name">Panama City</span><span class="tour__city-meta">Panama · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="uio" data-region="latam"><span class="tour__city-name">Quito</span><span class="tour__city-meta">Ecuador · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="sjo" data-region="latam"><span class="tour__city-name">San José</span><span class="tour__city-meta">Costa Rica · 3 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="sju" data-region="latam"><span class="tour__city-name">San Juan</span><span class="tour__city-meta">Puerto Rico · 3 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="sal" data-region="latam"><span class="tour__city-name">San Salvador</span><span class="tour__city-meta">El Salvador · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="scl" data-region="latam"><span class="tour__city-name">Santiago</span><span class="tour__city-meta">Chile · 6 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="sti" data-region="latam"><span class="tour__city-name">Santiago de los Caballeros</span><span class="tour__city-meta">Dominican Republic · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="sdq" data-region="latam"><span class="tour__city-name">Santo Domingo</span><span class="tour__city-meta">Dominican Republic · 2 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="sao" data-region="latam"><span class="tour__city-name">São Paulo</span><span class="tour__city-meta">Brazil · 2 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="tgu" data-region="latam"><span class="tour__city-name">Tegucigalpa</span><span class="tour__city-meta">Honduras · 1 show</span></button></li>
+          </ul>
+        </section>
+        <section class="tour__group" data-region="europe" aria-labelledby="tour-g-europe">
+          <h3 class="tour__group-title" id="tour-g-europe">Europe <span>16</span></h3>
+          <ul>
+            <li><button class="tour__city" type="button" data-id="ams" data-region="europe"><span class="tour__city-name">Amsterdam</span><span class="tour__city-meta">Netherlands · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="arn" data-region="europe"><span class="tour__city-name">Arnhem</span><span class="tour__city-meta">Netherlands · 2 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="bcn" data-region="europe"><span class="tour__city-name">Barcelona</span><span class="tour__city-meta">Spain · 3 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="ber" data-region="europe"><span class="tour__city-name">Berlin</span><span class="tour__city-meta">Germany · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="bru" data-region="europe"><span class="tour__city-name">Brussels</span><span class="tour__city-meta">Belgium · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="dus" data-region="europe"><span class="tour__city-name">Düsseldorf</span><span class="tour__city-meta">Germany · 2 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="lis" data-region="europe"><span class="tour__city-name">Lisbon</span><span class="tour__city-meta">Portugal · 2 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="lon" data-region="europe"><span class="tour__city-name">London</span><span class="tour__city-meta">United Kingdom · 3 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="mad" data-region="europe"><span class="tour__city-name">Madrid</span><span class="tour__city-meta">Spain · 13 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="mrs" data-region="europe"><span class="tour__city-name">Marseille</span><span class="tour__city-meta">France · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="mil" data-region="europe"><span class="tour__city-name">Milan</span><span class="tour__city-meta">Italy · 2 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="par" data-region="europe"><span class="tour__city-name">Paris</span><span class="tour__city-meta">France · 3 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="sto" data-region="europe"><span class="tour__city-name">Stockholm</span><span class="tour__city-meta">Sweden · 2 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="vlc" data-region="europe"><span class="tour__city-name">Valencia</span><span class="tour__city-meta">Spain · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="waw" data-region="europe"><span class="tour__city-name">Warsaw</span><span class="tour__city-meta">Poland · 1 show</span></button></li>
+            <li><button class="tour__city" type="button" data-id="zrh" data-region="europe"><span class="tour__city-name">Zurich</span><span class="tour__city-meta">Switzerland · 1 show</span></button></li>
+          </ul>
+        </section>
+        <section class="tour__group" data-region="apac" aria-labelledby="tour-g-apac">
+          <h3 class="tour__group-title" id="tour-g-apac">Asia-Pacific <span>2</span></h3>
+          <ul>
+            <li><button class="tour__city" type="button" data-id="syd" data-region="apac"><span class="tour__city-name">Sydney</span><span class="tour__city-meta">Australia · 2 shows</span></button></li>
+            <li><button class="tour__city" type="button" data-id="tyo" data-region="apac"><span class="tour__city-name">Tokyo</span><span class="tour__city-meta">Japan · 1 show</span></button></li>
+          </ul>
+        </section>
+      </div>
+      <script type="application/json" id="tour-data">{"stops":{"sdq":{"city":"Santo Domingo","country":"Dominican Republic","region":"latam","lat":18.4861,"lon":-69.9312,"venues":[["Estadio Olímpico Félix Sánchez",2,"2025-11-21"]]},"sjo":{"city":"San José","country":"Costa Rica","region":"latam","lat":9.9281,"lon":-84.0907,"venues":[["Estadio Nacional",2,"2025-12-05"],["Parque Viva",1,"2026-06-27"]]},"mex":{"city":"Mexico City","country":"Mexico","region":"latam","lat":19.4326,"lon":-99.1332,"venues":[["Estadio GNP Seguros",8,"2025-12-10"],["Palacio de los Deportes",1,"2026-06-06"]]},"scl":{"city":"Santiago","country":"Chile","region":"latam","lat":-33.4489,"lon":-70.6693,"venues":[["Estadio Nacional",3,"2026-01-09"],["Movistar Arena",3,"2026-08-22"]]},"lim":{"city":"Lima","country":"Peru","region":"latam","lat":-12.0464,"lon":-77.0428,"venues":[["Estadio Nacional",2,"2026-01-16"],["Costa 21",1,"2026-08-15"]]},"mde":{"city":"Medellín","country":"Colombia","region":"latam","lat":6.2442,"lon":-75.5812,"venues":[["Estadio Atanasio Girardot",3,"2026-01-23"]]},"bue":{"city":"Buenos Aires","country":"Argentina","region":"latam","lat":-34.6037,"lon":-58.3816,"venues":[["Estadio Monumental",3,"2026-02-13"],["Movistar Arena",2,"2026-08-20"]]},"sao":{"city":"São Paulo","country":"Brazil","region":"latam","lat":-23.5505,"lon":-46.6333,"venues":[["Allianz Parque",2,"2026-02-20"]]},"syd":{"city":"Sydney","country":"Australia","region":"apac","lat":-33.8688,"lon":151.2093,"venues":[["ENGIE Stadium",2,"2026-02-28"]]},"tyo":{"city":"Tokyo","country":"Japan","region":"apac","lat":35.6074,"lon":140.1065,"venues":[["Tipstar Dome Chiba",1,"2026-03-07"]]},"bcn":{"city":"Barcelona","country":"Spain","region":"europe","lat":41.3874,"lon":2.1686,"venues":[["Estadi Olímpic Lluís Companys",2,"2026-05-22"],["Palau Sant Jordi",1,"2026-05-17"]]},"lis":{"city":"Lisbon","country":"Portugal","region":"europe","lat":38.7223,"lon":-9.1393,"venues":[["Estádio da Luz",2,"2026-05-26"]]},"mad":{"city":"Madrid","country":"Spain","region":"europe","lat":40.4168,"lon":-3.7038,"venues":[["Riyadh Air Metropolitano",10,"2026-05-30"],["Movistar Arena",3,"2026-05-15"]]},"dus":{"city":"Düsseldorf","country":"Germany","region":"europe","lat":51.2277,"lon":6.7735,"venues":[["Merkur Spiel-Arena",2,"2026-06-20"]]},"arn":{"city":"Arnhem","country":"Netherlands","region":"europe","lat":51.9851,"lon":5.8987,"venues":[["GelreDome",2,"2026-06-23"]]},"lon":{"city":"London","country":"United Kingdom","region":"europe","lat":51.5072,"lon":-0.1276,"venues":[["Tottenham Hotspur Stadium",2,"2026-06-27"],["O2 Academy Brixton",1,"2026-09-21"]]},"mrs":{"city":"Marseille","country":"France","region":"europe","lat":43.2965,"lon":5.3698,"venues":[["Orange Vélodrome",1,"2026-07-01"]]},"par":{"city":"Paris","country":"France","region":"europe","lat":48.8924,"lon":2.2069,"venues":[["Paris La Défense Arena",2,"2026-07-04"],["Bataclan",1,"2026-09-19"]]},"sto":{"city":"Stockholm","country":"Sweden","region":"europe","lat":59.3293,"lon":18.0686,"venues":[["Strawberry Arena",2,"2026-07-10"]]},"waw":{"city":"Warsaw","country":"Poland","region":"europe","lat":52.2297,"lon":21.0122,"venues":[["PGE Narodowy",1,"2026-07-14"]]},"mil":{"city":"Milan","country":"Italy","region":"europe","lat":45.4642,"lon":9.19,"venues":[["Ippodromo Snai La Maura",1,"2026-07-17"],["Fabrique",1,"2026-09-11"]]},"bru":{"city":"Brussels","country":"Belgium","region":"europe","lat":50.8503,"lon":4.3517,"venues":[["King Baudouin Stadium",1,"2026-07-22"]]},"sju":{"city":"San Juan","country":"Puerto Rico","region":"latam","lat":18.4655,"lon":-66.1057,"venues":[["Estadio Hiram Bithorn",2,"2026-08-22"],["Coliseo de Puerto Rico",1,"2026-11-28"]]},"bog":{"city":"Bogotá","country":"Colombia","region":"latam","lat":4.711,"lon":-74.0721,"venues":[["Movistar Arena",2,"2026-04-17"]]},"mid":{"city":"Mérida","country":"Mexico","region":"latam","lat":20.9674,"lon":-89.5926,"venues":[["Foro GNP",1,"2026-06-03"]]},"mty":{"city":"Monterrey","country":"Mexico","region":"latam","lat":25.6866,"lon":-100.3161,"venues":[["Auditorio Banamex",1,"2026-06-09"]]},"gdl":{"city":"Guadalajara","country":"Mexico","region":"latam","lat":20.6597,"lon":-103.3496,"venues":[["Auditorio Telmex",1,"2026-06-10"]]},"sal":{"city":"San Salvador","country":"El Salvador","region":"latam","lat":13.6929,"lon":-89.2182,"venues":[["Complejo Cuscatlán",1,"2026-06-19"]]},"tgu":{"city":"Tegucigalpa","country":"Honduras","region":"latam","lat":14.0723,"lon":-87.1921,"venues":[["Coliseo Nacional de Ingenieros",1,"2026-06-20"]]},"pty":{"city":"Panama City","country":"Panama","region":"latam","lat":8.9824,"lon":-79.5199,"venues":[["Plaza Amador",1,"2026-06-26"]]},"uio":{"city":"Quito","country":"Ecuador","region":"latam","lat":-0.1807,"lon":-78.4678,"venues":[["Coliseo Rumiñahui",1,"2026-08-27"]]},"gye":{"city":"Guayaquil","country":"Ecuador","region":"latam","lat":-2.1709,"lon":-79.9224,"venues":[["Coliseo Voltaire",1,"2026-08-29"]]},"vlc":{"city":"Valencia","country":"Spain","region":"europe","lat":39.4699,"lon":-0.3763,"venues":[["Roig Arena",1,"2026-09-06"]]},"zrh":{"city":"Zurich","country":"Switzerland","region":"europe","lat":47.3769,"lon":8.5417,"venues":[["X-tra",1,"2026-09-12"]]},"ber":{"city":"Berlin","country":"Germany","region":"europe","lat":52.52,"lon":13.405,"venues":[["Columbiahalle",1,"2026-09-14"]]},"ams":{"city":"Amsterdam","country":"Netherlands","region":"europe","lat":52.3676,"lon":4.9041,"venues":[["Melkweg",1,"2026-09-18"]]},"sti":{"city":"Santiago de los Caballeros","country":"Dominican Republic","region":"latam","lat":19.4517,"lon":-70.697,"venues":[["Gran Arena del Cibao",1,"2026-10-03"]]},"sfo":{"city":"San Francisco","country":"United States","region":"na","lat":37.7749,"lon":-122.4194,"venues":[["Bill Graham Civic Auditorium",1,"2026-10-15"]]},"den":{"city":"Denver","country":"United States","region":"na","lat":39.7392,"lon":-104.9903,"venues":[["Fillmore Auditorium",1,"2026-10-18"]]},"bna":{"city":"Nashville","country":"United States","region":"na","lat":36.1627,"lon":-86.7816,"venues":[["The Truth",1,"2026-10-21"]]},"atl":{"city":"Atlanta","country":"United States","region":"na","lat":33.749,"lon":-84.388,"venues":[["Synovus Bank Amphitheater",1,"2026-10-23"]]},"clt":{"city":"Charlotte","country":"United States","region":"na","lat":35.2271,"lon":-80.8431,"venues":[["The Fillmore Charlotte",1,"2026-10-24"]]},"yyz":{"city":"Toronto","country":"Canada","region":"na","lat":43.6532,"lon":-79.3832,"venues":[["Coca-Cola Coliseum",1,"2026-10-27"]]},"yul":{"city":"Montreal","country":"Canada","region":"na","lat":45.5017,"lon":-73.5673,"venues":[["Olympia de Montréal",1,"2026-10-28"]]},"bos":{"city":"Boston","country":"United States","region":"na","lat":42.3601,"lon":-71.0589,"venues":[["MGM Music Hall at Fenway",1,"2026-10-30"]]},"nyc":{"city":"New York","country":"United States","region":"na","lat":40.6826,"lon":-73.9754,"venues":[["Barclays Center",1,"2026-10-31"]]},"phl":{"city":"Philadelphia","country":"United States","region":"na","lat":39.9526,"lon":-75.1652,"venues":[["The Met",1,"2026-11-01"]]},"was":{"city":"Washington, D.C.","country":"United States","region":"na","lat":38.7826,"lon":-77.0172,"venues":[["The Theater at MGM National Harbor",1,"2026-11-04"]]},"chi":{"city":"Chicago","country":"United States","region":"na","lat":41.8781,"lon":-87.6298,"venues":[["Aragon Ballroom",1,"2026-11-07"]]},"lax":{"city":"Los Angeles","country":"United States","region":"na","lat":33.9617,"lon":-118.3531,"venues":[["Kia Forum",1,"2026-11-15"]]},"hou":{"city":"Houston","country":"United States","region":"na","lat":29.7604,"lon":-95.3698,"venues":[["713 Music Hall",1,"2026-11-18"]]},"dfw":{"city":"Irving","country":"United States","region":"na","lat":32.814,"lon":-96.9489,"venues":[["The Pavilion at Toyota Music Factory",1,"2026-11-21"]]},"aus":{"city":"Austin","country":"United States","region":"na","lat":30.2672,"lon":-97.7431,"venues":[["ACL Live at the Moody Theater",1,"2026-11-22"]]},"mco":{"city":"Orlando","country":"United States","region":"na","lat":28.5383,"lon":-81.3792,"venues":[["Kia Center",1,"2026-12-03"]]},"mia":{"city":"Miami","country":"United States","region":"na","lat":25.7617,"lon":-80.1918,"venues":[["Kaseya Center",3,"2026-12-04"]]}},"routes":[["sdq","sjo","mex","scl","lim","mde","bue","sao","syd","tyo","bcn","lis","mad","dus","arn","lon","mrs","par","sto","waw","mil","bru","sju"],["bog","mad","bcn","mid","mex","mty","gdl","sal","tgu","pty","sjo","lim","bue","scl","uio","gye","vlc","mil","zrh","ber","ams","par","lon","mad","sti","sfo","den","bna","atl","clt","yyz","yul","bos","nyc","phl","was","chi","lax","hou","dfw","aus","sju","mco","mia"]]}</script>
     </section>
 
     <!-- ============ Testimonial ============ -->
@@ -247,24 +563,38 @@
       </figure>
     </section>
 
-    <!-- ============ Upcycling ============ -->
-    <section class="upcycling" id="upcycling">
-      <figure class="well well--paper upcycling__well" data-reveal="clip">
-        <div class="well__media"></div>
-        <figcaption class="well__label">Upcycling — deadstock pile, daylight</figcaption>
-      </figure>
-      <div class="upcycling__body">
-        <p class="eyebrow" data-reveal>The Radical Upcycling Project</p>
+    <!-- ============ Global expansion ============ -->
+    <section class="expansion" id="expansion">
+      <div class="expansion__body">
+        <p class="eyebrow" data-reveal>Global expansion</p>
         <h2 class="headline headline--l" data-reveal="lines">
-          <span class="ln"><span>Too good</span></span>
-          <span class="ln"><span>to be</span></span>
-          <span class="ln"><span>deadstock.</span></span>
+          <span class="ln"><span>Take your</span></span>
+          <span class="ln"><span>merch</span></span>
+          <span class="ln"><span>worldwide.</span></span>
         </h2>
-        <p class="upcycling__copy" data-reveal>Unsold inventory gets shredded, re-spun and cut into new recycled-cotton apparel — so last tour’s overrun becomes next tour’s drop.</p>
+        <p class="expansion__copy" data-reveal>From Puerto Rico to every continent: we set up the production, logistics and local partners that take an artist’s merch into new markets.</p>
         <div data-reveal>
-          <a class="btn btn--ink" href="#contact">Start an upcycle <svg class="ico ico--r" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+          <a class="btn btn--ink" href="#contact">Plan your expansion <svg class="ico ico--r" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
         </div>
       </div>
+      <ul class="expansion__topics" aria-label="How we expand your merch">
+          <li class="expansion__topic" data-reveal style="--i:0">
+            <span class="expansion__n">01</span>
+            <span><span class="expansion__title">New markets</span><span class="expansion__text">Tour stops, pop-ups and retail launches across Latin America, Europe, Asia and beyond.</span></span>
+          </li>
+          <li class="expansion__topic" data-reveal style="--i:1">
+            <span class="expansion__n">02</span>
+            <span><span class="expansion__title">Local production</span><span class="expansion__text">Print and manufacture close to the fans to cut shipping time, cost and customs.</span></span>
+          </li>
+          <li class="expansion__topic" data-reveal style="--i:2">
+            <span class="expansion__n">03</span>
+            <span><span class="expansion__title">Cross-border e-commerce</span><span class="expansion__text">Regional stores with local currencies, duties handled and fast delivery.</span></span>
+          </li>
+          <li class="expansion__topic" data-reveal style="--i:3">
+            <span class="expansion__n">04</span>
+            <span><span class="expansion__title">Retail &amp; licensing partners</span><span class="expansion__text">The right wholesale and licensing partners in every country.</span></span>
+          </li>
+      </ul>
     </section>
 
     <!-- ============ Contact ============ -->
@@ -308,7 +638,7 @@
               <option>Tour &amp; Live Sales</option>
               <option>E-Commerce &amp; Retail</option>
               <option>Brand Licensing</option>
-              <option>Sustainability &amp; Upcycling</option>
+              <option>Global Expansion</option>
               <option>Not sure yet</option>
             </select>
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
@@ -322,11 +652,6 @@
           <label for="f-msg">The brief</label>
           <textarea id="f-msg" name="message" rows="4" placeholder="Quantities, timelines, references — whatever you’ve got."></textarea>
         </div>
-        <label class="check field--full">
-          <input type="checkbox" name="upcycle" value="yes">
-          <span class="check__box" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
-          Interested in upcycling our deadstock
-        </label>
         <p class="brief__error field--full" role="alert" aria-live="polite"></p>
         <button class="btn btn--accent btn--lg btn--block field--full" type="submit">
           Send brief <svg class="ico ico--ur" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
@@ -341,9 +666,9 @@
       <span class="wordmark fit" aria-hidden="true">Merchexp<span class="wordmark__tm">™</span></span>
     </div>
     <div class="site-footer__row">
-      <span class="locator">Based in<br>Los Angeles</span>
+      <span class="locator">Based in<br>Puerto Rico</span>
       <div class="tagline-stack">
-        <div>Merch experience co.</div>
+        <div>Merchexp</div>
         <div lang="ja">マーチ・エクスペリエンス・カンパニー</div>
         <div lang="it">Azienda di esperienze merch</div>
         <div lang="zh">周边体验公司</div>
@@ -355,8 +680,8 @@
     <div class="metabar site-footer__meta">
       <span>© <span data-year>2026</span> Merchexp™</span>
       <a href="mailto:info@merchexp.com">info@merchexp.com</a>
-      <!-- TODO: real profile URLs -->
-      <span class="site-footer__social"><a href="#">Instagram</a> · <a href="#">TikTok</a> · <a href="#">LinkedIn</a></span>
+      <!-- TODO: real profile URLs, and the B2B portal's live address (placeholder for now). -->
+      <span class="site-footer__social"><a class="site-footer__b2b" href="https://b2b.merchexp.com">B2B Portal ↗</a> · <a href="#">Instagram</a> · <a href="#">TikTok</a> · <a href="#">LinkedIn</a></span>
     </div>
     <a class="site-footer__top" href="#top">Back to top ↑</a>
   </footer>
